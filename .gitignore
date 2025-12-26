@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment files - SENSITIVE DATA
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+.env.uat
+
+# SQL Query Files - MAY CONTAIN SENSITIVE QUERIES
+config/*.sql
+*.sql
+
+# Exception: Keep example query file
+!config/queries.sql.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs - MAY CONTAIN SENSITIVE DATA
+logs/
+*.log
+*.log.*
+
+# Output Files - MAY CONTAIN SENSITIVE DATA
+output/
+*.csv
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes (if using bind mounts)
+data/
+volumes/

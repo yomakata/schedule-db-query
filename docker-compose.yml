@@ -1,0 +1,30 @@
+services:
+  schedule-db-query:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: schedule-db-query
+    restart: unless-stopped
+    # Docker Compose automatically loads .env file from the same directory
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Bangkok
+    volumes:
+      # Persist logs and output files
+      - ./logs:/app/logs
+      - ./output:/app/output
+      # Optional: Mount config for easy updates
+      - ./config:/app/config
+    # Optional: Add health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  default:
+    external: true
+    name: reverse-proxy

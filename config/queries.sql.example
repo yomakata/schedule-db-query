@@ -1,0 +1,29 @@
+-- Example SQL Query for Schedule DB Query
+-- Copy this file to queries.sql and modify with your actual query
+
+-- This is a sample query structure
+-- Replace with your actual database schema and requirements
+
+SELECT 
+    member_id,
+    member_name,
+    email,
+    registration_date,
+    status,
+    last_login_date,
+    points_balance
+FROM 
+    members
+WHERE 
+    status = 'active'
+    AND registration_date >= DATE_SUB(CURRENT_DATE, INTERVAL 30 DAY)
+ORDER BY 
+    registration_date DESC;
+
+-- Notes:
+-- 1. Ensure your query uses the correct table and column names for your database
+-- 2. Consider adding appropriate WHERE clauses to filter data
+-- 3. Use indexes on filtered columns for better performance
+-- 4. Test your query in a database client before using it here
+-- 5. Avoid SELECT * in production - specify only needed columns
+-- 6. Consider data volume - large result sets may impact performance
