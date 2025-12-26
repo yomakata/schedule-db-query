@@ -62,14 +62,14 @@ logger = setup_logging()
 
 
 def execute_snapshot():
-    """Main function to execute member snapshot"""
+    """Main function to execute schedule db query"""
     from datetime import datetime
     start_time = time.time()
     execution_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     try:
         logger.info("=" * 80)
-        logger.info("Starting Member Snapshot Execution")
+        logger.info("Starting Schedule DB query Execution")
         logger.info(f"Execution Time: {execution_timestamp}")
         logger.info("=" * 80)
         

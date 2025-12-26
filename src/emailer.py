@@ -2,9 +2,6 @@
 Emailer module for Schedule DB Query
 Handles email composition and sending with attachments
 """
-Emailer module for Schedule DB query
-Handles email composition and delivery with attachments
-"""
 import logging
 import smtplib
 from email.mime.text import MIMEText
@@ -152,7 +149,7 @@ class EmailSender:
         execution_time: float
     ) -> bool:
         """
-        Send member snapshot report email
+        Send schedule db query report email
         
         Args:
             csv_filepath: Path to CSV file to attach
@@ -162,13 +159,13 @@ class EmailSender:
         Returns:
             True if email sent successfully, False otherwise
         """
-        subject = f"Member Snapshot Report - {datetime.now().strftime('%Y-%m-%d')}"
+        subject = f"Schedule DB query Report - {datetime.now().strftime('%Y-%m-%d')}"
         
         body = f"""
 <html>
 <body>
-<h2>Member Snapshot Report</h2>
-<p>The scheduled member snapshot has been completed successfully.</p>
+<h2>Schedule DB query</h2>
+<p>The scheduled query has been completed successfully.</p>
 
 <h3>Summary:</h3>
 <ul>
@@ -179,7 +176,7 @@ class EmailSender:
     <li><strong>File Size:</strong> {csv_filepath.stat().st_size:,} bytes</li>
 </ul>
 
-<p>Please find the attached CSV file with the complete member snapshot data.</p>
+<p>Please find the attached CSV file with the complete schedule DB query data.</p>
 
 <hr>
 <p style="color: #666; font-size: 12px;">
@@ -208,13 +205,13 @@ For questions or issues, please contact the system administrator.
         Returns:
             True if email sent successfully, False otherwise
         """
-        subject = f"⚠️ Member Snapshot Error - {datetime.now().strftime('%Y-%m-%d')}"
+        subject = f"⚠️ Schedule DB query Error - {datetime.now().strftime('%Y-%m-%d')}"
         
         body = f"""
 <html>
 <body>
-<h2 style="color: #d9534f;">Member Snapshot Error</h2>
-<p>An error occurred during the scheduled member snapshot execution.</p>
+<h2 style="color: #d9534f;">Schedule DB query Error</h2>
+<p>An error occurred during the scheduled schedule db query execution.</p>
 
 <h3>Error Details:</h3>
 <div style="background-color: #f8d7da; padding: 15px; border-radius: 5px; border-left: 4px solid #d9534f;">

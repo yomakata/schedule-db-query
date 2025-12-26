@@ -12,6 +12,22 @@
   - `LOG_BACKUP_COUNT` - Number of backup logs
   - `EMAIL_ENABLED` - Optional email delivery
   - Multiple schedule times support
+- ✅ Added email provider configurations:
+  - Gmail SMTP with app password setup guide
+  - Office365/Outlook SMTP with regular password
+  - Custom SMTP server configuration
+- ✅ Enhanced schedule configuration examples:
+  - Single time, multiple times, end of day
+  - Timezone examples with link to full list
+  - Days configuration patterns
+- ✅ Improved logging configuration:
+  - Common log size values (5MB, 10MB, 50MB, 100MB)
+  - Backup count explanation with example
+  - Total disk space calculation
+- ✅ Better query file configuration:
+  - Multiple path examples
+  - Output filename pattern explanation
+  - FILE_PREFIX deprecation notice
 
 ### ✅ 2. Enhanced .gitignore
 - ✅ Added clear sections with comments

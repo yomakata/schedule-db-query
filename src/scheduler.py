@@ -26,6 +26,8 @@ class SnapshotScheduler:
         self.schedule_times = settings.SCHEDULE_TIME if isinstance(settings.SCHEDULE_TIME, list) else [settings.SCHEDULE_TIME]
         self.schedule_days = [day.strip().upper() for day in settings.SCHEDULE_DAYS]
         self.is_running = False
+        self.task_executing = False  # Flag to prevent concurrent execution
+        self.last_execution_minute = None  # Track the last execution minute to prevent duplicates
     
     def _create_task_wrapper(self, schedule_time: str):
         """
@@ -38,10 +40,31 @@ class SnapshotScheduler:
             Wrapper function that executes the task with context
         """
         def wrapper():
-            logger.info("=" * 80)
-            logger.info(f"⏰ Scheduled execution triggered at {schedule_time}")
-            logger.info("=" * 80)
-            return self.task_function()
+            from datetime import datetime
+            
+            # Get current time rounded to the minute
+            now = datetime.now()
+            current_minute = now.strftime('%Y-%m-%d %H:%M')
+            
+            # Prevent duplicate execution within the same minute
+            if self.last_execution_minute == current_minute:
+                logger.warning(f"Skipping duplicate execution for {schedule_time} - already executed at {current_minute}")
+                return
+            
+            # Prevent concurrent execution
+            if self.task_executing:
+                logger.warning(f"Skipping execution for {schedule_time} - task already running")
+                return
+            
+            try:
+                self.task_executing = True
+                self.last_execution_minute = current_minute
+                logger.info("=" * 80)
+                logger.info(f"⏰ Scheduled execution triggered at {schedule_time}")
+                logger.info("=" * 80)
+                return self.task_function()
+            finally:
+                self.task_executing = False
         return wrapper
     
     def setup_schedule(self):
@@ -73,30 +96,39 @@ class SnapshotScheduler:
                 'SUN': schedule.every().sunday,
             }
             
+            # Track scheduled times to prevent duplicates at the same time
+            scheduled_times = set()
+            
             # Schedule for each time
             for schedule_time in self.schedule_times:
-                # Create a wrapper function for this specific schedule time
-                task_wrapper = self._create_task_wrapper(schedule_time)
-                
                 # If all days are specified, use daily schedule
                 if len(schedule_days_set) == 7 or 'EVERYDAY' in self.schedule_days:
+                    # Create a wrapper function for this specific schedule time
+                    task_wrapper = self._create_task_wrapper(schedule_time)
                     job = schedule.every().day.at(schedule_time).do(task_wrapper)
                     logger.debug(f"Scheduled daily at {schedule_time} (next run: {job.next_run})")
+                    scheduled_times.add(schedule_time)
                 else:
-                    # For today's jobs, use schedule.every().day.at() to ensure same-day execution
-                    # For other days, use day-specific scheduling
-                    if current_day in schedule_days_set:
-                        # Add a daily job for today
-                        job = schedule.every().day.at(schedule_time).do(task_wrapper)
-                        logger.debug(f"Scheduled today at {schedule_time} (next run: {job.next_run})")
-                    
                     # Add day-specific jobs for all configured days
+                    # Use a set to track which day+time combinations we've already scheduled
                     for day in schedule_days_set:
                         if day in day_map:
-                            job = day_map[day].at(schedule_time).do(task_wrapper)
-                            logger.debug(f"Scheduled {day} at {schedule_time} (next run: {job.next_run})")
+                            # Create a unique key for this day+time combination
+                            schedule_key = f"{day}_{schedule_time}"
+                            if schedule_key not in scheduled_times:
+                                # Create a unique wrapper for each day+time combination
+                                task_wrapper = self._create_task_wrapper(schedule_time)
+                                job = day_map[day].at(schedule_time).do(task_wrapper)
+                                logger.debug(f"Scheduled {day} at {schedule_time} (next run: {job.next_run})")
+                                scheduled_times.add(schedule_key)
+                            else:
+                                logger.debug(f"Skipping duplicate schedule for {day} at {schedule_time}")
             
-            logger.info("Schedule setup completed")
+            # Log all scheduled jobs for debugging
+            all_jobs = schedule.get_jobs()
+            logger.info(f"Schedule setup completed - Total jobs created: {len(all_jobs)}")
+            for idx, job in enumerate(all_jobs, 1):
+                logger.debug(f"Job {idx}: next_run={job.next_run}, interval={job.interval}, unit={job.unit}")
             
         except Exception as e:
             logger.error(f"Error setting up schedule: {str(e)}")

@@ -24,7 +24,7 @@ services:
       retries: 3
       start_period: 10s
 
-networks:
-  default:
-    external: true
-    name: reverse-proxy
+# networks:
+#   default:
+#     external: true
+#     name: reverse-proxy
